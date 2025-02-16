@@ -1,0 +1,1 @@
+Scaffold-DbContext "Server=DESKTOP-RDSMTVI\SQL2016E;Database=Prestamos;Integrated Security=True;TrustServerCertificate=True;persist security info=True;Connect Timeout=30" Microsoft.EntityFrameworkCore.SqlServer -Context PrestamoContext -ContextDir Contexto -OutputDir Entidades -DataAnnotations -NoPluralize -Force
