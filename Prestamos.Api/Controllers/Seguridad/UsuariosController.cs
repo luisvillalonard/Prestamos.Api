@@ -56,7 +56,7 @@ namespace Prestamos.Api.Controllers.Seguridad
             return Ok(result);
         }
 
-        [HttpPost("cambio")]
+        [HttpPost("cambioClave")]
         public async Task<IActionResult> PostCambiarClave([FromBody] UsuarioCambioClaveDto modelo)
         {
             var result = await _repositorio.PostCambiarClaveAsync(modelo);

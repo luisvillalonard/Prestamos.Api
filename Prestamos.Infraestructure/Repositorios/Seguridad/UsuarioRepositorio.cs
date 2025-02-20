@@ -106,8 +106,13 @@ namespace Prestamos.Infraestructure.Repositorios.Seguridad
             if (!result.Ok)
                 return result;
 
-            // Retorno el token generado
             var userApp = _mapper.Map<UserApp>(usuario);
+
+            // Agrego el token
+            byte[] salt = Utileria.GetSalt(Encriptador.key);
+            userApp.Token = Encriptador.AES.Encrypt(usuario.Acceso, salt);
+
+            // Retorno el token generado
             return new ResponseResult()
             {
                 Ok = true,

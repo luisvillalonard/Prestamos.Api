@@ -17,6 +17,8 @@ public partial class PrestamoContext : DbContext
     {
     }
 
+    public virtual DbSet<Acesor> Acesor { get; set; }
+
     public virtual DbSet<Ciudad> Ciudad { get; set; }
 
     public virtual DbSet<Cliente> Cliente { get; set; }
@@ -52,6 +54,8 @@ public partial class PrestamoContext : DbContext
             entity.HasOne(d => d.Ocupacion).WithMany(p => p.Cliente).OnDelete(DeleteBehavior.ClientSetNull);
 
             entity.HasOne(d => d.Sexo).WithMany(p => p.Cliente).OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Usuario).WithMany(p => p.ClienteUsuario).OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<Prestamo>(entity =>

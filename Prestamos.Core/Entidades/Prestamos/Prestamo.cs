@@ -21,7 +21,10 @@ public partial class Prestamo
     public DateOnly FechaCredito { get; set; }
 
     public int FormaPagoId { get; set; }
+
     public int MetodoPagoId { get; set; }
+
+    public int MonedaId { get; set; }
 
     public int Cuotas { get; set; }
 
@@ -58,11 +61,17 @@ public partial class Prestamo
     [Unicode(false)]
     public string Destino { get; set; } = null!;
 
+    public int? AcesorId { get; set; }
+
     public int UsuarioId { get; set; }
 
     public DateOnly? FechaActualizado { get; set; }
 
     public int? UsuarioIdActualizado { get; set; }
+
+    [ForeignKey("AcesorId")]
+    [InverseProperty("Prestamo")]
+    public virtual Acesor? Acesor { get; set; }
 
     [ForeignKey("ClienteId")]
     [InverseProperty("Prestamo")]

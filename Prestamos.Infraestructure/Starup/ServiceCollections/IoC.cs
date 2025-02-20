@@ -31,6 +31,7 @@ namespace Pos.Infraestructure.StarupConfigurations.ServiceCollections
             services.AddTransient(typeof(IOcupacionRepositorio), typeof(OcupacionRepositorio));
             services.AddTransient(typeof(IPrestamoEstadoRepositorio), typeof(PrestamoEstadoRepositorio));
             services.AddTransient(typeof(ISexoRepositorio), typeof(SexoRepositorio));
+            services.AddTransient(typeof(IAcesorRepositorio), typeof(AcesorRepositorio));
 
             /* Prestamos */
             services.AddTransient(typeof(IPrestamoRepositorio), typeof(PrestamoRepositorio));
