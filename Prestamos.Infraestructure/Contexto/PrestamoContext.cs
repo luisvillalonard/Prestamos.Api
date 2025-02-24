@@ -33,11 +33,15 @@ public partial class PrestamoContext : DbContext
 
     public virtual DbSet<Ocupacion> Ocupacion { get; set; }
 
+    public virtual DbSet<Permiso> Permiso { get; set; }
+
     public virtual DbSet<Prestamo> Prestamo { get; set; }
 
     public virtual DbSet<PrestamoEstado> PrestamoEstado { get; set; }
 
     public virtual DbSet<PrestamoPago> PrestamoPago { get; set; }
+
+    public virtual DbSet<Rol> Rol { get; set; }
 
     public virtual DbSet<Sexo> Sexo { get; set; }
 
@@ -56,6 +60,11 @@ public partial class PrestamoContext : DbContext
             entity.HasOne(d => d.Sexo).WithMany(p => p.Cliente).OnDelete(DeleteBehavior.ClientSetNull);
 
             entity.HasOne(d => d.Usuario).WithMany(p => p.ClienteUsuario).OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<Permiso>(entity =>
+        {
+            entity.HasOne(d => d.Rol).WithMany(p => p.Permiso).OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<Prestamo>(entity =>
@@ -80,6 +89,11 @@ public partial class PrestamoContext : DbContext
             entity.HasOne(d => d.Prestamo).WithMany(p => p.PrestamoPago).OnDelete(DeleteBehavior.ClientSetNull);
 
             entity.HasOne(d => d.Usuario).WithMany(p => p.PrestamoPago).OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<Rol>(entity =>
+        {
+            entity.Property(e => e.Id).ValueGeneratedNever();
         });
 
         OnModelCreatingPartial(modelBuilder);

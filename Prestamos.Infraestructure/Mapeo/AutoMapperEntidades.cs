@@ -72,6 +72,12 @@ namespace Prestamos.Infraestructure.Mapeo
             CreateMap<PrestamoPagoDto, PrestamoPago>();
 
             // SEGURIDAD
+            CreateMap<Rol, RolDto>();
+            CreateMap<RolDto, Rol>();
+            
+            CreateMap<Permiso, PermisoDto>();
+            CreateMap<PermisoDto, Permiso>();
+
             CreateMap<Usuario, UserApp>();
             CreateMap<Usuario, UsuarioDto>();
             CreateMap<UsuarioDto, Usuario>();

@@ -22,11 +22,13 @@ public partial class Usuario
     [MaxLength(1024)]
     public byte[] Salt { get; set; } = null!;
 
-    public bool Cambio { get; set; }
-
     [StringLength(50)]
     [Unicode(false)]
     public string? EmpleadoId { get; set; }
+
+    public int? RolId { get; set; }
+
+    public bool Cambio { get; set; }
 
     [StringLength(150)]
     [Unicode(false)]
@@ -48,4 +50,8 @@ public partial class Usuario
 
     [InverseProperty("UsuarioIdActualizadoNavigation")]
     public virtual ICollection<Prestamo> PrestamoUsuarioIdActualizadoNavigation { get; set; } = new List<Prestamo>();
+
+    [ForeignKey("RolId")]
+    [InverseProperty("Usuario")]
+    public virtual Rol? Rol { get; set; }
 }
