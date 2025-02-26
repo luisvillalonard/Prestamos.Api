@@ -26,7 +26,7 @@ public partial class Usuario
     [Unicode(false)]
     public string? EmpleadoId { get; set; }
 
-    public int? RolId { get; set; }
+    public int RolId { get; set; }
 
     public bool Cambio { get; set; }
 
@@ -53,5 +53,5 @@ public partial class Usuario
 
     [ForeignKey("RolId")]
     [InverseProperty("Usuario")]
-    public virtual Rol? Rol { get; set; }
+    public virtual Rol Rol { get; set; } = new Rol();
 }

@@ -38,7 +38,7 @@ namespace Prestamos.Infraestructure.Repositorios.Seguridad
 
         public override async Task<ResponseResult> PutAsync(Usuario entity)
         {
-            var result = await base.FindAsync(user => user.Id == entity.Id);
+            var result = await base.FindAsync(user => user.Id == entity.Id, user => user.Rol);
             if (!result.Ok)
                 return result;
 
@@ -58,6 +58,7 @@ namespace Prestamos.Infraestructure.Repositorios.Seguridad
         public async Task<ResponseResult> ValidarAsync(LoginDto login)
         {
             var usuario = await dbQuery
+                .Include(user => user.Rol).ThenInclude(rol => rol.Permiso)
                 .FirstOrDefaultAsync(x => x.Acceso.ToLower() == login.Acceso.ToLower());
 
             if (usuario == null)

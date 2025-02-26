@@ -40,6 +40,7 @@ namespace Pos.Infraestructure.StarupConfigurations.ServiceCollections
             /* Seguridad */
             services.AddTransient(typeof(IUsuarioRepositorio), typeof(UsuarioRepositorio));
             services.AddTransient(typeof(IRolRepositorio), typeof(RolRepositorio));
+            services.AddTransient(typeof(IMenuRepositorio), typeof(MenuRepositorio));
             services.AddTransient(typeof(IPermisoRepositorio), typeof(PermisoRepositorio));
 
             return services;

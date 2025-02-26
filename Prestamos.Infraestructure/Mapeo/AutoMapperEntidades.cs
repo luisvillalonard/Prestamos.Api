@@ -72,8 +72,10 @@ namespace Prestamos.Infraestructure.Mapeo
             CreateMap<PrestamoPagoDto, PrestamoPago>();
 
             // SEGURIDAD
-            CreateMap<Rol, RolDto>();
-            CreateMap<RolDto, Rol>();
+            CreateMap<Rol, RolDto>()
+                .ForMember(dest => dest.Permisos, src => src.MapFrom(p => p.Permiso));
+            CreateMap<RolDto, Rol>()
+                .ForMember(dest => dest.Permiso, src => src.MapFrom(p => p.Permisos));
             
             CreateMap<Permiso, PermisoDto>();
             CreateMap<PermisoDto, Permiso>();

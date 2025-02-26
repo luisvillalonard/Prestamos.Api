@@ -1,11 +1,12 @@
 ﻿using Prestamos.Core.Dto.Seguridad;
 using Prestamos.Core.Enumerables;
+using Prestamos.Core.Interfaces.Seguridad;
 using Prestamos.Core.Modelos;
 using Prestamos.Infraestructure.Helpers;
 
 namespace Prestamos.Infraestructure.Repositorios.Seguridad
 {
-    public class MenuRepositorio
+    public class MenuRepositorio : IMenuRepositorio
     {
         public async Task<ResponseResult> GetAllAsync()
         {
@@ -13,6 +14,11 @@ namespace Prestamos.Infraestructure.Repositorios.Seguridad
             {
                 Datos = Todos()
             });
+        }
+
+        public Task<ResponseResult> GetAllAsync(int rolId)
+        {
+            throw new NotImplementedException();
         }
 
         private MenuDto[] Todos()

@@ -24,7 +24,8 @@ namespace Prestamos.Api.Controllers.Seguridad
         public async Task<IActionResult> Get([FromQuery] RequestFilter request)
         {
             var result = await _repositorio.GetAllAsync(
-                opt => opt.OrderBy(ord => ord.Acceso));
+                opt => opt.OrderBy(ord => ord.Acceso),
+                opt => opt.Rol);
             if (!result.Ok)
                 return Ok(result);
 

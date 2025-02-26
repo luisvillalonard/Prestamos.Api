@@ -15,6 +15,11 @@ public partial class Rol
     [Unicode(false)]
     public string Nombre { get; set; } = null!;
 
+    [StringLength(250)]
+    public string? Descripcion { get; set; }
+
+    public bool EsAdmin { get; set; }
+
     public bool Activo { get; set; }
 
     [InverseProperty("Rol")]

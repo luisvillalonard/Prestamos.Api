@@ -91,11 +91,6 @@ public partial class PrestamoContext : DbContext
             entity.HasOne(d => d.Usuario).WithMany(p => p.PrestamoPago).OnDelete(DeleteBehavior.ClientSetNull);
         });
 
-        modelBuilder.Entity<Rol>(entity =>
-        {
-            entity.Property(e => e.Id).ValueGeneratedNever();
-        });
-
         OnModelCreatingPartial(modelBuilder);
     }
 
