@@ -14,6 +14,10 @@ public partial class PrestamoEstado
     [Unicode(false)]
     public string Nombre { get; set; } = null!;
 
+    public bool Inicial { get; set; }
+
+    public bool Final { get; set; }
+
     [InverseProperty("Estado")]
     public virtual ICollection<Prestamo> Prestamo { get; set; } = new List<Prestamo>();
 }

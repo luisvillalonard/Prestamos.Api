@@ -35,6 +35,26 @@ namespace Prestamos.Api.Controllers.Clientes
             return Ok(result);
         }
 
+        [HttpGet("documento")]
+        public async Task<IActionResult> Get([FromQuery] string documento)
+        {
+            if (documento is null)
+                return Ok(new ResponseResult(false, "número de documento inválido."));
+            
+            var result = await _repositorio.FindAsync(
+                opt => opt.Documento.Equals(documento),
+                opt => opt.Ciudad, opt => opt.DocumentoTipo, opt => opt.Sexo, opt => opt.Ocupacion);
+            if (!result.Ok)
+                return Ok(result);
+
+            var cliente = _mapper.Map<IEnumerable<ClienteDto>>(result.Datos).FirstOrDefault();
+            if (cliente is null)
+                return Ok(new ResponseResult(false, "número de documento no encontrado."));
+
+            result.Datos = cliente;
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ClienteDto modelo)
         {

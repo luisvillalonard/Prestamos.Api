@@ -37,6 +37,8 @@ public partial class PrestamoContext : DbContext
 
     public virtual DbSet<Prestamo> Prestamo { get; set; }
 
+    public virtual DbSet<PrestamoCuota> PrestamoCuota { get; set; }
+
     public virtual DbSet<PrestamoEstado> PrestamoEstado { get; set; }
 
     public virtual DbSet<PrestamoPago> PrestamoPago { get; set; }
@@ -82,6 +84,11 @@ public partial class PrestamoContext : DbContext
             entity.HasOne(d => d.UsuarioIdActualizadoNavigation).WithMany(p => p.PrestamoUsuarioIdActualizadoNavigation).HasConstraintName("FK_Prestamo_Usuario_ActualizadoUsuarioId");
         });
 
+        modelBuilder.Entity<PrestamoCuota>(entity =>
+        {
+            entity.HasOne(d => d.Prestamo).WithMany(p => p.PrestamoCuota).OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
         modelBuilder.Entity<PrestamoPago>(entity =>
         {
             entity.HasOne(d => d.FormaPago).WithMany(p => p.PrestamoPago).OnDelete(DeleteBehavior.ClientSetNull);
@@ -89,6 +96,11 @@ public partial class PrestamoContext : DbContext
             entity.HasOne(d => d.Prestamo).WithMany(p => p.PrestamoPago).OnDelete(DeleteBehavior.ClientSetNull);
 
             entity.HasOne(d => d.Usuario).WithMany(p => p.PrestamoPago).OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<Usuario>(entity =>
+        {
+            entity.HasOne(d => d.Rol).WithMany(p => p.Usuario).OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -18,6 +18,8 @@ public partial class Prestamo
 
     public int ClienteId { get; set; }
 
+    public DateOnly FechaRegistro { get; set; }
+
     public DateOnly FechaCredito { get; set; }
 
     public int FormaPagoId { get; set; }
@@ -26,7 +28,7 @@ public partial class Prestamo
 
     public int MonedaId { get; set; }
 
-    public int Cuotas { get; set; }
+    public int CantidadCuotas { get; set; }
 
     public int FechaCuotas { get; set; }
 
@@ -50,8 +52,6 @@ public partial class Prestamo
 
     [Column(TypeName = "numeric(18, 2)")]
     public decimal MultaRetrazo { get; set; }
-
-    public DateOnly FechaPago { get; set; }
 
     public int EstadoId { get; set; }
 
@@ -88,6 +88,9 @@ public partial class Prestamo
     [ForeignKey("MetodoPagoId")]
     [InverseProperty("Prestamo")]
     public virtual MetodoPago MetodoPago { get; set; } = null!;
+
+    [InverseProperty("Prestamo")]
+    public virtual ICollection<PrestamoCuota> PrestamoCuota { get; set; } = new List<PrestamoCuota>();
 
     [InverseProperty("Prestamo")]
     public virtual ICollection<PrestamoPago> PrestamoPago { get; set; } = new List<PrestamoPago>();

@@ -65,9 +65,28 @@ namespace Prestamos.Infraestructure.Mapeo
             CreateMap<SexoDto, Sexo>();
 
             // PRESTAMOS
-            CreateMap<Prestamo, PrestamoDto>();
-            CreateMap<PrestamoDto, Prestamo>();
+            CreateMap<Prestamo, PrestamoDto>()
+                .ForMember(dest => dest.FechaCredito, src => src.MapFrom(p => p.FechaCredito.ToString(Date_DD_MM_YYYY)))
+                .ForMember(dest => dest.Cliente, src => src.MapFrom(p => p.Cliente))
+                .ForMember(dest => dest.FormaPago, src => src.MapFrom(p => p.FormaPago))
+                .ForMember(dest => dest.MetodoPago, src => src.MapFrom(p => p.MetodoPago))
+                .ForMember(dest => dest.Estado, src => src.MapFrom(p => p.Estado))
+                .ForMember(dest => dest.Cuotas, src => src.MapFrom(p => p.PrestamoCuota));
+            CreateMap<PrestamoDto, Prestamo>()
+                .ForMember(dest => dest.FechaRegistro, src => src.MapFrom(p => DateOnly.FromDateTime(DateTime.ParseExact(p.FechaRegistro, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
+                .ForMember(dest => dest.FechaCredito, src => src.MapFrom(p => DateOnly.FromDateTime(DateTime.ParseExact(p.FechaCredito, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
+                .ForMember(dest => dest.FechaActualizado, src => src.MapFrom(p => string.IsNullOrEmpty(p.FechaActualizado) ? new DateOnly?() : DateOnly.FromDateTime(DateTime.ParseExact(p.FechaActualizado, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
+                .ForMember(dest => dest.Cliente, src => src.Ignore())
+                .ForMember(dest => dest.FormaPago, src => src.Ignore())
+                .ForMember(dest => dest.MetodoPago, src => src.Ignore())
+                .ForMember(dest => dest.Estado, src => src.Ignore())
+                .ForMember(dest => dest.PrestamoCuota, src => src.MapFrom(p => p.Cuotas));
 
+            CreateMap<PrestamoCuota, PrestamoCuotaDto>()
+                .ForMember(dest => dest.FechaPago, src => src.MapFrom(p => p.FechaPago.ToString(Date_DD_MM_YYYY)));
+            CreateMap<PrestamoCuotaDto, PrestamoCuota>()
+                .ForMember(dest => dest.FechaPago, src => src.MapFrom(p => DateOnly.FromDateTime(DateTime.ParseExact(p.FechaPago, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))));
+            
             CreateMap<PrestamoPago, PrestamoPagoDto>();
             CreateMap<PrestamoPagoDto, PrestamoPago>();
 
