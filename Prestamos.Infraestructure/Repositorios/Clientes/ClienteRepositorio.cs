@@ -24,9 +24,9 @@ namespace Prestamos.Infraestructure.Repositorios.Clientes
             var ultimo = _dbQuery.OrderByDescending(cli => cli.Id).FirstOrDefault();
 
             // Obtengo el ultimo codigo de cliente
-            int codigo = ultimo is not null
-                ? int.Parse(ultimo.Codigo.Split(',').Last()) + 1
-                : 1;
+            int codigo = 1;
+            if (ultimo is not null)
+                codigo = int.Parse(ultimo.Codigo.Split('-').Last()) + 1;
 
             // Le asigno el codigo al alicnte
             entity.Codigo = string.Concat("C-", codigo.ToString().PadLeft(5, '0'));

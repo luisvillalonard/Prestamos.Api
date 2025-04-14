@@ -14,6 +14,8 @@ public partial class Ciudad
     [Unicode(false)]
     public string Nombre { get; set; } = null!;
 
+    public bool Activo { get; set; }
+
     [InverseProperty("Ciudad")]
     public virtual ICollection<Cliente> Cliente { get; set; } = new List<Cliente>();
 }

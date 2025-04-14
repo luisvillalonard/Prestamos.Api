@@ -1,3 +1,3 @@
 ﻿namespace Prestamos.Core.Dto.DataMaestra;
 
-public class MetodoPagoDto : PropertiesBaseDto { }
+public class MetodoPagoDto : PropertiesBaseWithActiveDto { }

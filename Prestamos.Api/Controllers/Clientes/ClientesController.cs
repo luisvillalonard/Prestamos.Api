@@ -25,7 +25,20 @@ namespace Prestamos.Api.Controllers.Clientes
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] RequestFilter request)
         {
-            var result = await _repositorio.GetAllAsync(
+            var filters = ExpressionBuilder.New<Cliente>();
+            if (request is not null && !string.IsNullOrEmpty(request.Filter))
+            {
+                filters = item => item.Nombres.Contains(request.Filter)
+                    || item.Apellidos.Contains(request.Filter)
+                    || item.Codigo.Contains(request.Filter)
+                    || item.Documento.Contains(request.Filter)
+                    || item.Ciudad.Nombre.Contains(request.Filter)
+                    || item.Ocupacion.Nombre.Contains(request.Filter);
+            }
+
+            var result = await _repositorio.FindAndPagingAsync(
+                request ?? new(),
+                filters,
                 opt => opt.OrderBy(ord => ord.Nombres).ThenBy(ord => ord.Apellidos),
                 opt => opt.Ciudad, opt => opt.DocumentoTipo, opt => opt.Sexo, opt => opt.Ocupacion);
             if (!result.Ok)

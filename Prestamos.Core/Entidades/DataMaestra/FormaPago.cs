@@ -14,9 +14,11 @@ public partial class FormaPago
     [Unicode(false)]
     public string Nombre { get; set; } = null!;
 
-    [InverseProperty("FormaPago")]
-    public virtual ICollection<Prestamo> Prestamo { get; set; } = new List<Prestamo>();
+    public bool Activo { get; set; }
 
     [InverseProperty("FormaPago")]
-    public virtual ICollection<PrestamoPago> PrestamoPago { get; set; } = new List<PrestamoPago>();
+    public virtual ICollection<FormaPagoFecha> FormaPagoFecha { get; set; } = new List<FormaPagoFecha>();
+
+    [InverseProperty("FormaPago")]
+    public virtual ICollection<Prestamo> Prestamo { get; set; } = new List<Prestamo>();
 }

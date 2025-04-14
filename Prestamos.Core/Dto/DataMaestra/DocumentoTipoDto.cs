@@ -1,3 +1,3 @@
 ﻿namespace Prestamos.Core.Dto.DataMaestra;
 
-public class DocumentoTipoDto : PropertiesBaseDto { }
+public class DocumentoTipoDto : PropertiesBaseWithActiveDto { }

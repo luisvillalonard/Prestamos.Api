@@ -1,9 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Prestamos.Core.Dto.Clientes;
+using Prestamos.Core.Dto.Configuraciones;
 using Prestamos.Core.Dto.DataMaestra;
 using Prestamos.Core.Dto.Prestamos;
 using Prestamos.Core.Dto.Seguridad;
 using Prestamos.Core.Entidades.Clientes;
+using Prestamos.Core.Entidades.Configuraciones;
 using Prestamos.Core.Entidades.DataMaestra;
 using Prestamos.Core.Entidades.Prestamos;
 using Prestamos.Core.Entidades.Seguridad;
@@ -38,19 +40,36 @@ namespace Prestamos.Infraestructure.Mapeo
                 .ForMember(dest => dest.Ocupacion, src => src.Ignore())
                 .ForMember(dest => dest.Usuario, src => src.Ignore())
                 .ForMember(dest => dest.UsuarioIdActualizado, src => src.Ignore());
+            CreateMap<Cliente, VwCliente>()
+                .ForMember(dest => dest.NompreCompleto, src => src.MapFrom(p => string.Format("{0} {1}", p.Nombres, p.Apellidos).Trim()))
+                .ForMember(dest => dest.DocumentoTipo, src => src.MapFrom(p => p.DocumentoTipo.Nombre))
+                .ForMember(dest => dest.Sexo, src => src.MapFrom(p => p.Sexo.Nombre))
+                .ForMember(dest => dest.Ciudad, src => src.MapFrom(p => p.Ciudad.Nombre))
+                .ForMember(dest => dest.Ocupacion, src => src.MapFrom(p => p.Ocupacion.Nombre))
+                .ForMember(dest => dest.Estado, src => src.MapFrom(p => p.Activo));
 
             // DATA MAESTRA
+            CreateMap<Acesor, AcesorDto>();
+            CreateMap<AcesorDto, Acesor>();
+            
             CreateMap<Ciudad, CiudadDto>();
             CreateMap<CiudadDto, Ciudad>();
             
             CreateMap<DocumentoTipo, DocumentoTipoDto>();
             CreateMap<DocumentoTipoDto, DocumentoTipo>();
 
-            CreateMap<FormaPago, FormaPagoDto>();
-            CreateMap<FormaPagoDto, FormaPago>();
+            CreateMap<FormaPagoFecha, FormaPagoFechaDto>();
+            CreateMap<FormaPagoFechaDto, FormaPagoFecha>();
+            
+            CreateMap<FormaPago, FormaPagoDto>()
+                .ForMember(dest => dest.Dias, src => src.MapFrom(p => p.FormaPagoFecha));
+            CreateMap<FormaPagoDto, FormaPago>()
+                .ForMember(dest => dest.FormaPagoFecha, src => src.MapFrom(p => p.Dias));
 
             CreateMap<MetodoPago, MetodoPagoDto>();
-            CreateMap<MetodoPagoDto, MetodoPago>();
+            CreateMap<MetodoPagoDto, MetodoPago>()
+                .ForMember(dest => dest.Prestamo, src => src.Ignore())
+                .ForMember(dest => dest.PrestamoPago, src => src.Ignore());
 
             CreateMap<Moneda, MonedaDto>();
             CreateMap<MonedaDto, Moneda>();
@@ -83,9 +102,12 @@ namespace Prestamos.Infraestructure.Mapeo
                 .ForMember(dest => dest.PrestamoCuota, src => src.MapFrom(p => p.Cuotas));
 
             CreateMap<PrestamoCuota, PrestamoCuotaDto>()
-                .ForMember(dest => dest.FechaPago, src => src.MapFrom(p => p.FechaPago.ToString(Date_DD_MM_YYYY)));
+                .ForMember(dest => dest.FechaPago, src => src.MapFrom(p => p.FechaPago.ToString(Date_DD_MM_YYYY)))
+                .ForMember(dest => dest.Pagos, src => src.MapFrom(p => p.PrestamoPago))
+                .ForMember(dest => dest.Vencido, src => src.MapFrom(p => p.FechaPago < DateOnly.FromDateTime(DateTime.Now) ? true : false));
             CreateMap<PrestamoCuotaDto, PrestamoCuota>()
-                .ForMember(dest => dest.FechaPago, src => src.MapFrom(p => DateOnly.FromDateTime(DateTime.ParseExact(p.FechaPago, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))));
+                .ForMember(dest => dest.FechaPago, src => src.MapFrom(p => DateOnly.FromDateTime(DateTime.ParseExact(p.FechaPago, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
+                .ForMember(dest => dest.PrestamoPago, src => src.Ignore());
             
             CreateMap<PrestamoPago, PrestamoPagoDto>();
             CreateMap<PrestamoPagoDto, PrestamoPago>();
@@ -102,6 +124,10 @@ namespace Prestamos.Infraestructure.Mapeo
             CreateMap<Usuario, UserApp>();
             CreateMap<Usuario, UsuarioDto>();
             CreateMap<UsuarioDto, Usuario>();
+
+            // CONFIGURACIONES
+            CreateMap<Configuracion, ConfiguracionDto>();
+            CreateMap<ConfiguracionDto, Configuracion>();
 
         }
     }

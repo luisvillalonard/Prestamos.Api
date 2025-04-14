@@ -19,6 +19,11 @@ namespace Prestamos.Infraestructure.Repositorios
             result = new ResponseResult();
         }
 
+        public virtual async Task<ResponseResult> GetAllAsync()
+        {
+            return await GetAsync(default, default, default, default);
+        }
+        
         public virtual async Task<ResponseResult> GetAllAsync(
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy)
         {
@@ -119,7 +124,8 @@ namespace Prestamos.Infraestructure.Repositorios
                 {
                     TotalRecords = dbQuery.AsNoTracking().Count(),
                     PageSize = requestFilter.PageSize,
-                    CurrentPage = requestFilter.CurrentPage
+                    CurrentPage = requestFilter.CurrentPage,
+                    Filter = requestFilter.Filter
                 };
             }
             catch (Exception err)

@@ -57,33 +57,47 @@ namespace Prestamos.Infraestructure.Repositorios.Seguridad
 
         public async Task<ResponseResult> ValidarAsync(LoginDto login)
         {
-            var usuario = await dbQuery
-                .Include(user => user.Rol).ThenInclude(rol => rol.Permiso)
-                .FirstOrDefaultAsync(x => x.Acceso.ToLower() == login.Acceso.ToLower());
-
-            if (usuario == null)
-                return new ResponseResult(false, "Nombre de usuario no encontrado");
-
-            // Establezco el usuario a retornar
-            UserApp userApp = _mapper.Map<UserApp>(usuario);
-
-            // Encripto la clave
-            string clave = Encriptador.AES.Decrypt(usuario.Clave, usuario.Salt);
-
-            // Valido la clave del usuario
-            if (!login.Clave.Equals(clave, StringComparison.OrdinalIgnoreCase))
-                return new ResponseResult(false, "Clave de usuario incorrecta");
-
-            // Agrego el token
-            byte[] salt = Utileria.GetSalt(Encriptador.key);
-            userApp.Token = Encriptador.AES.Encrypt(usuario.Acceso, salt);
-
-            // Retorno el usuario de la aplicacion
-            return new ResponseResult()
+            try
             {
-                Ok = true,
-                Datos = userApp
-            };
+                //var usuario = await dbQuery
+                //    .Include(user => user.Rol).ThenInclude(rol => rol.Permiso)
+                //    .FirstOrDefaultAsync(x => x.Acceso.ToLower() == login.Acceso.ToLower());
+
+                var result = await base.FindAsync(
+                    user => user.Acceso.ToLower().Equals(login.Acceso.ToLower()),
+                    user => user.Rol, user => user.Rol.Permiso);
+                if (!result.Ok)
+                    return result;
+
+                var usuario = result.Datos is null ? null : ((IEnumerable<Usuario>)result.Datos).FirstOrDefault();
+                if (usuario == null)
+                    return new ResponseResult(false, "Nombre de usuario no encontrado");
+
+                // Establezco el usuario a retornar
+                UserApp userApp = _mapper.Map<UserApp>(usuario);
+
+                // Encripto la clave
+                string clave = Encriptador.AES.Decrypt(usuario.Clave, usuario.Salt);
+
+                // Valido la clave del usuario
+                if (!login.Clave.Equals(clave, StringComparison.OrdinalIgnoreCase))
+                    return new ResponseResult(false, "Clave de usuario incorrecta");
+
+                // Agrego el token
+                byte[] salt = Utileria.GetSalt(Encriptador.key);
+                userApp.Token = Encriptador.AES.Encrypt(usuario.Acceso, salt);
+
+                // Retorno el usuario de la aplicacion
+                return new ResponseResult()
+                {
+                    Ok = true,
+                    Datos = userApp
+                };
+            }
+            catch (Exception err)
+            {
+                return new ResponseResult(false, $"Situación inesperada tratando de validar los datos del usuario. {err.Message}".Trim());
+            }
         }
 
         public async Task<ResponseResult> PostCambiarClaveAsync(UsuarioCambioClaveDto login)

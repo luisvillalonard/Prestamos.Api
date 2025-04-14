@@ -4,6 +4,7 @@ using Prestamos.Core.Dto.Prestamos;
 using Prestamos.Core.Entidades.Prestamos;
 using Prestamos.Core.Interfaces.Prestamos;
 using Prestamos.Core.Modelos;
+using Prestamos.Infraestructure.Extensiones;
 
 namespace Prestamos.Api.Controllers.Prestamos
 {
@@ -34,14 +35,23 @@ namespace Prestamos.Api.Controllers.Prestamos
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PrestamoPagoDto modelo)
         {
+            var user = await Request.GetUser();
+            if (user == null)
+                return Ok(new ResponseResult(false, "Código de usuario inválido"));
+
             var item = _mapper.Map<PrestamoPago>(modelo);
-            var result = await _repositorio.PostAsync(item);
+            item.UsuarioId = user.Id;
+            var result = await _repositorio.PostAsync(item, modelo.PrestamoId);
             return Ok(result);
         }
 
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] PrestamoPagoDto modelo)
         {
+            var user = await Request.GetUser();
+            if (user == null)
+                return Ok(new ResponseResult(false, "Código de usuario inválido"));
+
             var item = _mapper.Map<PrestamoPago>(modelo);
             var result = await _repositorio.PutAsync(item);
             return Ok(result);

@@ -14,6 +14,8 @@ public partial class DocumentoTipo
     [Unicode(false)]
     public string Nombre { get; set; } = null!;
 
+    public bool Activo { get; set; }
+
     [InverseProperty("DocumentoTipo")]
     public virtual ICollection<Cliente> Cliente { get; set; } = new List<Cliente>();
 }

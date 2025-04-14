@@ -11,19 +11,23 @@ namespace Prestamos.Api.Controllers.DataMaestra
     [ApiController]
     public class FormasPagoController : ControllerBase
     {
-        private readonly IFormaPagoRepositorio _repositorio;
         private readonly IMapper _mapper;
-        public FormasPagoController(IMapper mapper, IFormaPagoRepositorio repositorio)
+        private readonly IFormaPagoRepositorio _repositorio;
+
+        public FormasPagoController(
+            IMapper mapper, 
+            IFormaPagoRepositorio repositorio)
         {
-            _repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] RequestFilter request)
         {
             var result = await _repositorio.GetAllAsync(
-                opt => opt.OrderBy(ord => ord.Nombre));
+                opt => opt.OrderBy(ord => ord.Nombre),
+                opt => opt.FormaPagoFecha);
             if (!result.Ok)
                 return Ok(result);
 

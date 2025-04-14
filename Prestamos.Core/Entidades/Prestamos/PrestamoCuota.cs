@@ -25,9 +25,17 @@ public partial class PrestamoCuota
     public decimal Amortizacion { get; set; }
 
     [Column(TypeName = "numeric(18, 2)")]
+    public decimal Descuento { get; set; }
+
+    [Column(TypeName = "numeric(18, 2)")]
     public decimal SaldoFinal { get; set; }
+
+    public bool Pagado { get; set; }
 
     [ForeignKey("PrestamoId")]
     [InverseProperty("PrestamoCuota")]
     public virtual Prestamo Prestamo { get; set; } = null!;
+
+    [InverseProperty("PrestamoCuota")]
+    public virtual ICollection<PrestamoPago> PrestamoPago { get; set; } = new List<PrestamoPago>();
 }

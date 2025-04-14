@@ -10,30 +10,38 @@ public partial class PrestamoPago
     [Key]
     public long Id { get; set; }
 
-    public long PrestamoId { get; set; }
+    public long PrestamoCuotaId { get; set; }
 
-    public int FormaPagoId { get; set; }
+    public int MetodoPagoId { get; set; }
 
     [Column(TypeName = "numeric(18, 2)")]
     public decimal Monto { get; set; }
-
-    [Column(TypeName = "numeric(18, 2)")]
-    public decimal Deuda { get; set; }
 
     [Column(TypeName = "numeric(18, 2)")]
     public decimal MultaMora { get; set; }
 
     public int UsuarioId { get; set; }
 
-    [ForeignKey("FormaPagoId")]
-    [InverseProperty("PrestamoPago")]
-    public virtual FormaPago FormaPago { get; set; } = null!;
+    public bool Anulado { get; set; }
 
-    [ForeignKey("PrestamoId")]
+    public int? UsuarioIdAnulado { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? AnuladoFecha { get; set; }
+
+    [ForeignKey("MetodoPagoId")]
     [InverseProperty("PrestamoPago")]
-    public virtual Prestamo Prestamo { get; set; } = null!;
+    public virtual MetodoPago MetodoPago { get; set; } = null!;
+
+    [ForeignKey("PrestamoCuotaId")]
+    [InverseProperty("PrestamoPago")]
+    public virtual PrestamoCuota PrestamoCuota { get; set; } = null!;
 
     [ForeignKey("UsuarioId")]
-    [InverseProperty("PrestamoPago")]
+    [InverseProperty("PrestamoPagoUsuario")]
     public virtual Usuario Usuario { get; set; } = null!;
+
+    [ForeignKey("UsuarioIdAnulado")]
+    [InverseProperty("PrestamoPagoUsuarioIdAnuladoNavigation")]
+    public virtual Usuario? UsuarioIdAnuladoNavigation { get; set; }
 }

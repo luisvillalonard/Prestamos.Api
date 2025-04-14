@@ -5,6 +5,8 @@ namespace Prestamos.Core.Interfaces
 {
     public interface IRepositorioGenerico<TEntity, TKey> where TEntity : class
     {
+        Task<ResponseResult> GetAllAsync();
+        
         Task<ResponseResult> GetAllAsync(
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy);
 

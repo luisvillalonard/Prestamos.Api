@@ -30,8 +30,6 @@ public partial class Prestamo
 
     public int CantidadCuotas { get; set; }
 
-    public int FechaCuotas { get; set; }
-
     [Column(TypeName = "numeric(18, 2)")]
     public decimal DeudaInicial { get; set; }
 
@@ -47,15 +45,9 @@ public partial class Prestamo
     [Column(TypeName = "numeric(18, 2)")]
     public decimal SaldoFinal { get; set; }
 
-    [Column(TypeName = "numeric(18, 2)")]
-    public decimal AbonoCuota { get; set; }
-
-    [Column(TypeName = "numeric(18, 2)")]
-    public decimal MultaRetrazo { get; set; }
-
     public int EstadoId { get; set; }
 
-    public int DiasMora { get; set; }
+    public bool AplicaDescuento { get; set; }
 
     [StringLength(250)]
     [Unicode(false)]
@@ -68,6 +60,11 @@ public partial class Prestamo
     public DateOnly? FechaActualizado { get; set; }
 
     public int? UsuarioIdActualizado { get; set; }
+
+    public bool Cancelalo { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? FechaCancelado { get; set; }
 
     [ForeignKey("AcesorId")]
     [InverseProperty("Prestamo")]
@@ -89,11 +86,12 @@ public partial class Prestamo
     [InverseProperty("Prestamo")]
     public virtual MetodoPago MetodoPago { get; set; } = null!;
 
+    [ForeignKey("MonedaId")]
     [InverseProperty("Prestamo")]
-    public virtual ICollection<PrestamoCuota> PrestamoCuota { get; set; } = new List<PrestamoCuota>();
+    public virtual Moneda Moneda { get; set; } = null!;
 
     [InverseProperty("Prestamo")]
-    public virtual ICollection<PrestamoPago> PrestamoPago { get; set; } = new List<PrestamoPago>();
+    public virtual ICollection<PrestamoCuota> PrestamoCuota { get; set; } = new List<PrestamoCuota>();
 
     [ForeignKey("UsuarioId")]
     [InverseProperty("PrestamoUsuario")]

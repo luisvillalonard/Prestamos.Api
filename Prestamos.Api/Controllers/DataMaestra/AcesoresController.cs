@@ -27,7 +27,7 @@ namespace Prestamos.Api.Controllers.DataMaestra
             if (!result.Ok)
                 return Ok(result);
 
-            result.Datos = _mapper.Map<IEnumerable<CiudadDto>>(result.Datos);
+            result.Datos = _mapper.Map<IEnumerable<AcesorDto>>(result.Datos);
             return Ok(result);
         }
 

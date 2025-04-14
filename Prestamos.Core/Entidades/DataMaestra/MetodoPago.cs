@@ -14,6 +14,11 @@ public partial class MetodoPago
     [Unicode(false)]
     public string Nombre { get; set; } = null!;
 
+    public bool Activo { get; set; }
+
     [InverseProperty("MetodoPago")]
     public virtual ICollection<Prestamo> Prestamo { get; set; } = new List<Prestamo>();
+
+    [InverseProperty("MetodoPago")]
+    public virtual ICollection<PrestamoPago> PrestamoPago { get; set; } = new List<PrestamoPago>();
 }

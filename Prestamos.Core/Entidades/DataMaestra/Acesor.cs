@@ -14,6 +14,8 @@ public partial class Acesor
     [Unicode(false)]
     public string Nombre { get; set; } = null!;
 
+    public bool Activo { get; set; }
+
     [InverseProperty("Acesor")]
     public virtual ICollection<Prestamo> Prestamo { get; set; } = new List<Prestamo>();
 }
