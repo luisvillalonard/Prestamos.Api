@@ -14,12 +14,9 @@ public partial class PrestamoDto
     public FormaPagoDto FormaPago { get; set; } = new();
     public MetodoPagoDto MetodoPago { get; set; } = new();
     public MonedaDto Moneda { get; set; } = new();
-    public int CantidadCuotas { get; set; }
-    public decimal DeudaInicial { get; set; }
+    public int Cuotas { get; set; }
+    public decimal Monto { get; set; }
     public decimal Interes { get; set; }
-    public decimal Capital { get; set; }
-    public decimal Amortizacion { get; set; }
-    public decimal SaldoFinal { get; set; }
     public PrestamoEstadoDto? Estado { get; set; }
     public bool Reenganche { get; set; }
     public bool AplicaDescuento { get; set; }
@@ -28,7 +25,7 @@ public partial class PrestamoDto
     public UsuarioDto? Usuario { get; set; }
     public string? FechaActualizado { get; set; }
     public UsuarioDto? UsuarioIdActualizado { get; set; }
-    public bool Cancelalo { get; set; }
+    public bool Cancelado { get; set; }
     public string? FechaCancelado { get; set; }
-    public PrestamoCuotaDto[] Cuotas { get; set; } = [];
+    public PrestamoCuotaDto[] PrestamoCuotas { get; set; } = [];
 }

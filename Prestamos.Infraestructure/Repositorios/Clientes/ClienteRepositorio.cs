@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Prestamos.Core.Entidades.Clientes;
-using Prestamos.Core.Entidades.Seguridad;
 using Prestamos.Core.Interfaces.Clientes;
 using Prestamos.Core.Modelos;
 using Prestamos.Infraestructure.Contexto;
@@ -10,12 +10,79 @@ namespace Prestamos.Infraestructure.Repositorios.Clientes
     public class ClienteRepositorio : RepositorioGenerico<Cliente, int>, IClienteRepositorio
     {
         internal IQueryable<Cliente> _dbQuery;
+        internal IQueryable<VwCliente> _dbQueryView;
         private readonly IMapper _mapper;
 
         public ClienteRepositorio(PrestamoContext context, IMapper mapper) : base(context)
         {
-            _dbQuery = context.Set<Cliente>().AsQueryable<Cliente>();
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _dbQuery = context.Set<Cliente>().AsQueryable<Cliente>();
+            _dbQueryView = context.Set<VwCliente>().AsQueryable<VwCliente>();
+        }
+
+        public async Task<ResponseResult> Todos(RequestFilter request)
+        {
+            try
+            {
+                var filters = ExpressionBuilder.New<VwCliente>();
+                if (request is not null && !string.IsNullOrEmpty(request.Filter))
+                {
+                    filters = item => item.NombreCompleto.ToLower().Contains(request.Filter.ToLower())
+                        || item.Codigo.ToLower().Contains(request.Filter.ToLower())
+                        || item.Documento.ToLower().Contains(request.Filter.ToLower());
+                    _dbQueryView = _dbQueryView.Where(filters);
+                }
+
+                if (request is null)
+                    request = new();
+
+                var data = _dbQueryView
+                    .AsNoTracking()
+                    .AsEnumerable()
+                    .Skip((request.CurrentPage - 1) * request.PageSize)
+                    .Take(request.PageSize)
+                    .ToArray() ?? [];
+
+                var result = new ResponseResult(data);
+                return await Task.FromResult(result);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(new ResponseResult(false, "SItuación inesperada tratando de obtener los datos de los clientes."));
+            }
+        }
+
+        public async Task<ResponseResult> Activos(RequestFilter request)
+        {
+            try
+            {
+                var filters = ExpressionBuilder.New<VwCliente>();
+                if (request is not null && !string.IsNullOrEmpty(request.Filter))
+                {
+                    filters = item => item.Activo == true &
+                        (item.NombreCompleto.ToLower().Contains(request.Filter.ToLower())
+                        || item.Codigo.ToLower().Contains(request.Filter.ToLower())
+                        || item.Documento.ToLower().Contains(request.Filter.ToLower()));
+                    _dbQueryView = _dbQueryView.Where(filters);
+                }
+
+                if (request is null)
+                    request = new();
+
+                var data = _dbQueryView
+                    .AsNoTracking()
+                    .AsEnumerable()
+                    .Skip((request.CurrentPage - 1) * request.PageSize)
+                    .Take(request.PageSize)
+                    .ToArray() ?? [];
+
+                var result = new ResponseResult(data);
+                return await Task.FromResult(result);
+            }
+            catch (Exception)
+            {
+                return await Task.FromResult(new ResponseResult(false, "SItuación inesperada tratando de obtener los datos de los clientes."));
+            }
         }
 
         public override async Task<ResponseResult> PostAsync(Cliente entity)

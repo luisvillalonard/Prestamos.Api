@@ -15,6 +15,7 @@ namespace Prestamos.Api.Controllers.Prestamos
         private readonly IMapper _mapper;
         private readonly IPrestamoRepositorio _repositorio;
         private readonly IPrestamoPagoRepositorio _repoPago;
+
         public PrestamosController(
             IMapper mapper,
             IPrestamoRepositorio repositorio,
@@ -25,29 +26,10 @@ namespace Prestamos.Api.Controllers.Prestamos
             _repoPago = repoPago ?? throw new ArgumentNullException(nameof(repoPago));
         }
 
-        [HttpGet]
+        [HttpGet("todos")]
         public async Task<IActionResult> Get([FromQuery] RequestFilter request)
         {
-            var filters = ExpressionBuilder.New<Prestamo>();
-            if (request is not null && !string.IsNullOrEmpty(request.Filter))
-            {
-                filters = item => item.Codigo.Contains(request.Filter)
-                    || item.Cliente.Nombres.Contains(request.Filter)
-                    || item.Cliente.Apellidos.Contains(request.Filter)
-                    || item.Cliente.Codigo.Contains(request.Filter)
-                    || item.Cliente.Documento.Contains(request.Filter);
-            }
-
-            var result = await _repositorio.FindAndPagingAsync(
-                request ?? new(),
-                filters,
-                opt => opt.OrderByDescending(ord => ord.Id),
-                opt => opt.Cliente, opt => opt.Estado, opt => opt.FormaPago, opt => opt.MetodoPago, opt => opt.Moneda, opt => opt.Acesor!, opt => opt.PrestamoCuota);
-            if (!result.Ok)
-                return Ok(result);
-
-            var prestamos = _mapper.Map<IEnumerable<PrestamoDto>>(result.Datos);
-            result.Datos = await CargarPagos(prestamos);
+            var result = await _repositorio.Todos(request);
             return Ok(result);
         }
 
@@ -70,7 +52,7 @@ namespace Prestamos.Api.Controllers.Prestamos
                 request ?? new(),
                 filters,
                 opt => opt.OrderByDescending(ord => ord.Id),
-                opt => opt.Cliente, opt => opt.Estado, opt => opt.FormaPago, opt => opt.MetodoPago, opt => opt.Moneda, opt => opt.Acesor!, opt => opt.PrestamoCuota);
+                opt => opt.Cliente, opt => opt.Cliente.DocumentoTipo, opt => opt.Cliente.Sexo, opt => opt.Cliente.Ciudad, opt => opt.Cliente.Ocupacion, opt => opt.Estado, opt => opt.FormaPago, opt => opt.MetodoPago, opt => opt.Moneda, opt => opt.Acesor!, opt => opt.PrestamoCuota);
             if (!result.Ok)
                 return Ok(result);
 
@@ -82,14 +64,10 @@ namespace Prestamos.Api.Controllers.Prestamos
         [HttpGet("actual")]
         public async Task<IActionResult> GetPorCliente([FromQuery] int id)
         {
-            var filters = ExpressionBuilder.New<Prestamo>();
-            filters = item => !item.Estado.Final;
-            filters.And(item => item.ClienteId == id);
-
             var result = await _repositorio.FindAsync(
-                filters,
+                item => !item.Estado.Final & item.ClienteId == id,
                 opt => opt.OrderByDescending(ord => ord.Id),
-                opt => opt.Cliente, opt => opt.Estado, opt => opt.FormaPago, opt => opt.MetodoPago, opt => opt.Moneda, opt => opt.Acesor!, opt => opt.PrestamoCuota);
+                opt => opt.Cliente, opt => opt.Cliente.DocumentoTipo, opt => opt.Cliente.Sexo, opt => opt.Cliente.Ciudad, opt => opt.Cliente.Ocupacion, opt => opt.Estado, opt => opt.FormaPago, opt => opt.FormaPago.FormaPagoFecha, opt => opt.MetodoPago, opt => opt.Moneda, opt => opt.Acesor!, opt => opt.PrestamoCuota);
             if (!result.Ok)
                 return Ok(result);
 
@@ -102,7 +80,7 @@ namespace Prestamos.Api.Controllers.Prestamos
         {
             var result = await _repositorio.FindAsync(
                 item => item.Id == id,
-                opt => opt.Cliente, opt => opt.Estado, opt => opt.FormaPago, opt => opt.MetodoPago, opt => opt.Acesor!, opt => opt.PrestamoCuota);
+                opt => opt.Cliente, opt => opt.Cliente.DocumentoTipo, opt => opt.Cliente.Sexo, opt => opt.Cliente.Ciudad, opt => opt.Cliente.Ocupacion, opt => opt.Estado, opt => opt.FormaPago, opt => opt.FormaPago.FormaPagoFecha, opt => opt.MetodoPago, opt => opt.Moneda, opt => opt.Acesor!, opt => opt.PrestamoCuota);
             if (!result.Ok)
                 return Ok(result);
 
@@ -126,7 +104,13 @@ namespace Prestamos.Api.Controllers.Prestamos
 
             var item = _mapper.Map<Prestamo>(modelo);
             item.UsuarioId = user.Id;
-            var result = await _repositorio.PostAsync(item);
+
+            ResponseResult result = new();
+            if (modelo.Reenganche)
+                result = await _repositorio.ReengancheAsync(item);
+            else
+                result = await _repositorio.PostAsync(item);
+
             return Ok(result);
         }
 
@@ -150,7 +134,7 @@ namespace Prestamos.Api.Controllers.Prestamos
             {
                 List<long> cuotasIds = [];
                 foreach (var prestamo in prestamos)
-                    cuotasIds.AddRange(prestamo.Cuotas.Select(c => c.Id).ToList());
+                    cuotasIds.AddRange(prestamo.PrestamoCuotas.Select(c => c.Id).ToList());
 
                 var result = await _repoPago.FindAsync(
                     opt => cuotasIds.Any(valor => valor == opt.PrestamoCuotaId),
@@ -160,7 +144,7 @@ namespace Prestamos.Api.Controllers.Prestamos
                     var pagos = _mapper.Map<IEnumerable<PrestamoPagoDto>>(result.Datos);
                     if (pagos != null)
                         foreach (var prestamo in prestamos)
-                            foreach (var cuota in prestamo.Cuotas)
+                            foreach (var cuota in prestamo.PrestamoCuotas)
                                 cuota.Pagos = pagos.Where(p => p.PrestamoCuotaId == cuota.Id).ToArray();
                 }
             }

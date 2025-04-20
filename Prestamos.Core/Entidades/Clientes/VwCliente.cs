@@ -18,7 +18,7 @@ public partial class VwCliente
 
     [StringLength(301)]
     [Unicode(false)]
-    public string NompreCompleto { get; set; } = null!;
+    public string NombreCompleto { get; set; } = null!;
 
     [StringLength(150)]
     [Unicode(false)]
@@ -44,5 +44,5 @@ public partial class VwCliente
     [Unicode(false)]
     public string TelefonoCelular { get; set; } = null!;
 
-    public bool Estado { get; set; }
+    public bool Activo { get; set; }
 }

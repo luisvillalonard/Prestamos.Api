@@ -17,9 +17,6 @@ public partial class PrestamoPago
     [Column(TypeName = "numeric(18, 2)")]
     public decimal Monto { get; set; }
 
-    [Column(TypeName = "numeric(18, 2)")]
-    public decimal MultaMora { get; set; }
-
     public int UsuarioId { get; set; }
 
     public bool Anulado { get; set; }

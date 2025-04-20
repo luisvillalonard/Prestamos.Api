@@ -28,22 +28,13 @@ public partial class Prestamo
 
     public int MonedaId { get; set; }
 
-    public int CantidadCuotas { get; set; }
+    public int Cuotas { get; set; }
 
     [Column(TypeName = "numeric(18, 2)")]
-    public decimal DeudaInicial { get; set; }
+    public decimal Monto { get; set; }
 
     [Column(TypeName = "numeric(18, 2)")]
     public decimal Interes { get; set; }
-
-    [Column(TypeName = "numeric(18, 2)")]
-    public decimal Capital { get; set; }
-
-    [Column(TypeName = "numeric(18, 2)")]
-    public decimal Amortizacion { get; set; }
-
-    [Column(TypeName = "numeric(18, 2)")]
-    public decimal SaldoFinal { get; set; }
 
     public int EstadoId { get; set; }
 
@@ -61,7 +52,7 @@ public partial class Prestamo
 
     public int? UsuarioIdActualizado { get; set; }
 
-    public bool Cancelalo { get; set; }
+    public bool Cancelado { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime? FechaCancelado { get; set; }

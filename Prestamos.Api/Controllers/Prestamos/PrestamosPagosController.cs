@@ -44,6 +44,18 @@ namespace Prestamos.Api.Controllers.Prestamos
             var result = await _repositorio.PostAsync(item, modelo.PrestamoId);
             return Ok(result);
         }
+        
+        [HttpPost("automaticos")]
+        public async Task<IActionResult> PostRange([FromBody] PrestamoPagoDto[] modelos)
+        {
+            var user = await Request.GetUser();
+            if (user == null)
+                return Ok(new ResponseResult(false, "Código de usuario inválido"));
+
+            var pagos = modelos.Select(pago => { pago.Usuario = new() { Id = user.Id }; return pago; }).ToArray();
+            var result = await _repositorio.PostAutomaticoAsync(pagos);
+            return Ok(result);
+        }
 
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] PrestamoPagoDto modelo)

@@ -9,6 +9,7 @@ using Prestamos.Core.Entidades.Configuraciones;
 using Prestamos.Core.Entidades.DataMaestra;
 using Prestamos.Core.Entidades.Prestamos;
 using Prestamos.Core.Entidades.Seguridad;
+using Prestamos.Infraestructure.TEMP;
 using System.Globalization;
 
 namespace Prestamos.Infraestructure.Mapeo
@@ -40,13 +41,6 @@ namespace Prestamos.Infraestructure.Mapeo
                 .ForMember(dest => dest.Ocupacion, src => src.Ignore())
                 .ForMember(dest => dest.Usuario, src => src.Ignore())
                 .ForMember(dest => dest.UsuarioIdActualizado, src => src.Ignore());
-            CreateMap<Cliente, VwCliente>()
-                .ForMember(dest => dest.NompreCompleto, src => src.MapFrom(p => string.Format("{0} {1}", p.Nombres, p.Apellidos).Trim()))
-                .ForMember(dest => dest.DocumentoTipo, src => src.MapFrom(p => p.DocumentoTipo.Nombre))
-                .ForMember(dest => dest.Sexo, src => src.MapFrom(p => p.Sexo.Nombre))
-                .ForMember(dest => dest.Ciudad, src => src.MapFrom(p => p.Ciudad.Nombre))
-                .ForMember(dest => dest.Ocupacion, src => src.MapFrom(p => p.Ocupacion.Nombre))
-                .ForMember(dest => dest.Estado, src => src.MapFrom(p => p.Activo));
 
             // DATA MAESTRA
             CreateMap<Acesor, AcesorDto>();
@@ -85,21 +79,29 @@ namespace Prestamos.Infraestructure.Mapeo
 
             // PRESTAMOS
             CreateMap<Prestamo, PrestamoDto>()
+                .ForMember(dest => dest.FechaRegistro, src => src.MapFrom(p => p.FechaRegistro.ToString(Date_DD_MM_YYYY)))
                 .ForMember(dest => dest.FechaCredito, src => src.MapFrom(p => p.FechaCredito.ToString(Date_DD_MM_YYYY)))
+                .ForMember(dest => dest.FechaActualizado, src => src.MapFrom(p => !p.FechaActualizado.HasValue ? null : p.FechaActualizado.Value.ToString(Date_DD_MM_YYYY)))
+                .ForMember(dest => dest.FechaCancelado, src => src.MapFrom(p => !p.FechaCancelado.HasValue ? null : p.FechaCancelado.Value.ToString(Date_DD_MM_YYYY)))
                 .ForMember(dest => dest.Cliente, src => src.MapFrom(p => p.Cliente))
                 .ForMember(dest => dest.FormaPago, src => src.MapFrom(p => p.FormaPago))
                 .ForMember(dest => dest.MetodoPago, src => src.MapFrom(p => p.MetodoPago))
                 .ForMember(dest => dest.Estado, src => src.MapFrom(p => p.Estado))
-                .ForMember(dest => dest.Cuotas, src => src.MapFrom(p => p.PrestamoCuota));
+                .ForMember(dest => dest.Usuario, src => src.MapFrom(p => p.Usuario))
+                .ForMember(dest => dest.UsuarioIdActualizado, src => src.MapFrom(p => p.UsuarioIdActualizadoNavigation))
+                .ForMember(dest => dest.PrestamoCuotas, src => src.MapFrom(p => p.PrestamoCuota));
             CreateMap<PrestamoDto, Prestamo>()
                 .ForMember(dest => dest.FechaRegistro, src => src.MapFrom(p => DateOnly.FromDateTime(DateTime.ParseExact(p.FechaRegistro, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
                 .ForMember(dest => dest.FechaCredito, src => src.MapFrom(p => DateOnly.FromDateTime(DateTime.ParseExact(p.FechaCredito, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
                 .ForMember(dest => dest.FechaActualizado, src => src.MapFrom(p => string.IsNullOrEmpty(p.FechaActualizado) ? new DateOnly?() : DateOnly.FromDateTime(DateTime.ParseExact(p.FechaActualizado, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
+                .ForMember(dest => dest.FechaCancelado, src => src.MapFrom(p => string.IsNullOrEmpty(p.FechaCancelado) ? new DateOnly?() : DateOnly.FromDateTime(DateTime.ParseExact(p.FechaCancelado, Date_DD_MM_YYYY, CultureInfo.InvariantCulture))))
                 .ForMember(dest => dest.Cliente, src => src.Ignore())
                 .ForMember(dest => dest.FormaPago, src => src.Ignore())
                 .ForMember(dest => dest.MetodoPago, src => src.Ignore())
                 .ForMember(dest => dest.Estado, src => src.Ignore())
-                .ForMember(dest => dest.PrestamoCuota, src => src.MapFrom(p => p.Cuotas));
+                .ForMember(dest => dest.Usuario, src => src.MapFrom(p => p.Usuario))
+                .ForMember(dest => dest.UsuarioIdActualizadoNavigation, src => src.MapFrom(p => p.UsuarioIdActualizado))
+                .ForMember(dest => dest.PrestamoCuota, src => src.MapFrom(p => p.PrestamoCuotas));
 
             CreateMap<PrestamoCuota, PrestamoCuotaDto>()
                 .ForMember(dest => dest.FechaPago, src => src.MapFrom(p => p.FechaPago.ToString(Date_DD_MM_YYYY)))

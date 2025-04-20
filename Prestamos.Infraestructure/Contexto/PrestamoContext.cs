@@ -4,6 +4,7 @@ using Prestamos.Core.Entidades.Configuraciones;
 using Prestamos.Core.Entidades.DataMaestra;
 using Prestamos.Core.Entidades.Prestamos;
 using Prestamos.Core.Entidades.Seguridad;
+using Prestamos.Infraestructure.TEMP;
 
 namespace Prestamos.Infraestructure.Contexto;
 
@@ -55,6 +56,10 @@ public partial class PrestamoContext : DbContext
     public virtual DbSet<Usuario> Usuario { get; set; }
 
     public virtual DbSet<VwCliente> VwCliente { get; set; }
+
+    public virtual DbSet<VwPrestamo> VwPrestamo { get; set; }
+
+    public virtual DbSet<VwPrestamoCuota> VwPrestamoCuota { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -120,6 +125,16 @@ public partial class PrestamoContext : DbContext
         modelBuilder.Entity<VwCliente>(entity =>
         {
             entity.ToView("VwCliente");
+        });
+
+        modelBuilder.Entity<VwPrestamo>(entity =>
+        {
+            entity.ToView("VwPrestamo");
+        });
+
+        modelBuilder.Entity<VwPrestamoCuota>(entity =>
+        {
+            entity.ToView("VwPrestamoCuota");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -22,32 +22,40 @@ namespace Prestamos.Api.Controllers.Clientes
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] RequestFilter request)
+        [HttpGet("todos")]
+        public async Task<IActionResult> GetAll([FromQuery] RequestFilter request)
         {
-            var filters = ExpressionBuilder.New<Cliente>();
-            if (request is not null && !string.IsNullOrEmpty(request.Filter))
-            {
-                filters = item => item.Nombres.Contains(request.Filter)
-                    || item.Apellidos.Contains(request.Filter)
-                    || item.Codigo.Contains(request.Filter)
-                    || item.Documento.Contains(request.Filter)
-                    || item.Ciudad.Nombre.Contains(request.Filter)
-                    || item.Ocupacion.Nombre.Contains(request.Filter);
-            }
+            var result = await _repositorio.Todos(request);
+            return Ok(result);
+        }
+        
+        [HttpGet("activos")]
+        public async Task<IActionResult> GetAllActive([FromQuery] RequestFilter request)
+        {
+            var result = await _repositorio.Activos(request);
+            return Ok(result);
+        }
 
-            var result = await _repositorio.FindAndPagingAsync(
-                request ?? new(),
-                filters,
-                opt => opt.OrderBy(ord => ord.Nombres).ThenBy(ord => ord.Apellidos),
+        [HttpGet("byId")]
+        public async Task<IActionResult> Get([FromQuery] int id)
+        {
+            if (id == 0)
+                return Ok(new ResponseResult(false, "Código de cliente inválido."));
+            
+            var result = await _repositorio.FindAsync(
+                opt => opt.Id == id,
                 opt => opt.Ciudad, opt => opt.DocumentoTipo, opt => opt.Sexo, opt => opt.Ocupacion);
             if (!result.Ok)
                 return Ok(result);
 
-            result.Datos = _mapper.Map<IEnumerable<ClienteDto>>(result.Datos);
+            var cliente = _mapper.Map<IEnumerable<ClienteDto>>(result.Datos).FirstOrDefault();
+            if (cliente is null)
+                return Ok(new ResponseResult(false, "número de documento no encontrado."));
+
+            result.Datos = cliente;
             return Ok(result);
         }
-
+        
         [HttpGet("documento")]
         public async Task<IActionResult> Get([FromQuery] string documento)
         {
