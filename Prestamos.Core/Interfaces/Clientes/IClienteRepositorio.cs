@@ -7,5 +7,6 @@ namespace Prestamos.Core.Interfaces.Clientes
     {
         Task<ResponseResult> Todos(RequestFilter request);
         Task<ResponseResult> Activos(RequestFilter request);
+        Task<ResponseResult> Carga(Cliente[] items);
     }
 }

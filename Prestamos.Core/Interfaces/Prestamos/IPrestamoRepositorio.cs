@@ -7,5 +7,6 @@ namespace Prestamos.Core.Interfaces.Prestamos
     {
         Task<ResponseResult> Todos(RequestFilter requestFilter);
         Task<ResponseResult> ReengancheAsync(Prestamo entity);
+        Task<ResponseResult> Carga(Prestamo[] items);
     }
 }

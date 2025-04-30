@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Prestamos.Core.Dto.Clientes;
 using Prestamos.Core.Dto.Prestamos;
+using Prestamos.Core.Entidades.Clientes;
 using Prestamos.Core.Entidades.Prestamos;
 using Prestamos.Core.Interfaces.Prestamos;
 using Prestamos.Core.Modelos;
@@ -154,6 +156,32 @@ namespace Prestamos.Api.Controllers.Prestamos
             }
 
             return prestamos;
+        }
+
+        [HttpPost("carga")]
+        public async Task<IActionResult> Post([FromBody] PrestamoDto[] items)
+        {
+            var user = await Request.GetUser();
+            if (user == null)
+                return Ok(new ResponseResult(false, "Código de usuario inválido"));
+
+            IEnumerable<Prestamo> prestamos = Enumerable.Empty<Prestamo>();
+
+            try
+            {
+                prestamos = _mapper.Map<IEnumerable<Prestamo>>(items);
+            }
+            catch (Exception)
+            {
+                return Ok(new ResponseResult(false, "Situación inesperada tratando de establecer los prestamos que se van a procesar."));
+            }
+
+            if (!prestamos.Any())
+                return Ok(new ResponseResult(false, "No fue posible establecer los prestamos que se van a procesar"));
+
+            prestamos = prestamos.Select(cli => { cli.UsuarioId = user.Id; return cli; });
+            var result = await _repositorio.Carga(prestamos.ToArray());
+            return Ok(result);
         }
     }
 }

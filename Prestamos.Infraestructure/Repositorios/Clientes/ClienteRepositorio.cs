@@ -131,5 +131,12 @@ namespace Prestamos.Infraestructure.Repositorios.Clientes
             result = await base.PutAsync(cliente);
             return result;
         }
+
+        public async Task<ResponseResult> Carga(Cliente[] items)
+        {
+            var result = await base.PostRangeAsync(items);
+            
+            return result;
+        }
     }
 }

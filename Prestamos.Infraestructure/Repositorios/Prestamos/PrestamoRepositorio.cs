@@ -154,6 +154,16 @@ namespace Prestamos.Infraestructure.Repositorios.Prestamos
             prestamo.UsuarioIdActualizado = entity.UsuarioIdActualizado;
             prestamo.FechaActualizado = entity.FechaActualizado;
             result = await base.PutAsync(prestamo);
+            if (!result.Ok)
+                return result;
+            
+            return new ResponseResult();
+        }
+
+        public async Task<ResponseResult> Carga(Prestamo[] items)
+        {
+            var result = await base.PostRangeAsync(items);
+
             return result;
         }
     }
